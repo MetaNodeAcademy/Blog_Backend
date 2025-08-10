@@ -1,6 +1,7 @@
 package config
 
 import (
+	"Blog_Backend/server/api"
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -49,14 +50,11 @@ func RouterInit(router *gin.Engine) {
 }
 
 func routerGroup(router *gin.Engine) *gin.Engine {
+	router.GET("/test", func(c *gin.Context) {})
 	//路由组
 	//V1/article Get Delete Post Update
-	v1 := router.Group("/v1/articles")
-	v1.GET("test", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "hello world",
-		})
-	})
+	api.InitArticlesRouter(router)
+
 	return router
 }
 
