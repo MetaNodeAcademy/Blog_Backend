@@ -12,10 +12,52 @@ import (
 	"time"
 )
 
+const (
+	ErrorCodeAuthFailed          = "AUTH_FAILED"
+	ErrorCodeInternalServerError = "INTERNAL_SERVER_ERROR"
+)
+
+type ErrorResponse struct {
+	Code string      `json:"code"`
+	Msg  string      `json:"msg"`
+	Data interface{} `json:"data"`
+}
+
+// Authorization 中间件
+func Authorization() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		defer func() {
+			if err := recover(); err != nil {
+				// 处理中间件内部错误
+				HandleError(c, ErrorCodeInternalServerError, "鉴权失败", err)
+			}
+		}()
+
+		// 模拟鉴权逻辑，这里假设鉴权失败
+		if c.Query("token") == "" {
+			panic("鉴权失败") // 模拟错误
+		}
+
+		c.Next() // 继续执行后续 handler
+	}
+}
+
+func HandleError(c *gin.Context, code, msg string, err interface{}) {
+	// 记录日志，可以根据 err 的类型做不同的处理
+	fmt.Println("Error:", err)
+	c.AbortWithStatusJSON(http.StatusBadRequest, ErrorResponse{
+		Code: code,
+		Msg:  msg,
+		Data: nil,
+	})
+}
+
 func RouterInit(router *gin.Engine) {
 	// Create context that listens for the interrupt signal from the OS.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
+	router.Use(gin.Recovery())
+	router.Use(Authorization())
 	//初始化日志
 	router = loggerConfig(router)
 	//绑定验证器
