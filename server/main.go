@@ -11,5 +11,6 @@ import (
 //go:generate go mod download
 
 func main() {
-	config.RouterInit(gin.Default())
+	config.InitTables()
+	RouterInit(gin.Default())
 }

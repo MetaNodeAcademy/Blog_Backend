@@ -1,4 +1,4 @@
-package config
+package main
 
 import (
 	"Blog_Backend/server/api"
@@ -54,7 +54,7 @@ func routerGroup(router *gin.Engine) *gin.Engine {
 	//路由组
 	//V1/article Get Delete Post Update
 	api.InitArticlesRouter(router)
-
+	api.InitUsersRouter(router)
 	return router
 }
 
